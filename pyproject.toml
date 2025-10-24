@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mn-translit"
-dynamic = ["version"]
+version = "1.0.0"
 description = "Mongolian Latin-Cyrillic transliteration library following MNS 5217:2012 standard"
 readme = "README.md"
 license = {text = "MIT"}
@@ -31,9 +31,6 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-
-[tool.setuptools.dynamic]
-version = {attr = "mn_translit.__version__"}
 
 [tool.setuptools]
 packages = ["mn_translit"]
