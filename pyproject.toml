@@ -7,7 +7,7 @@ name = "mn-translit"
 version = "1.0.0"
 description = "Mongolian Latin-Cyrillic transliteration library following MNS 5217:2012 standard"
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 authors = [
     {name = "Battseren Badral", email = "bbattseren88@gmail.com"}
 ]
