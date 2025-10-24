@@ -133,13 +133,13 @@ print(words_to_number("хоёр зуун гучин"))
 Run the test suite to verify all functionality:
 
 ```bash
-python test/test_translit.py
+python tests/test_translit.py
 ```
 
 Or with Python 2.7:
 
 ```bash
-python2 test/test_translit.py
+python2 tests/test_translit.py
 ```
 
 ## Development
@@ -155,14 +155,14 @@ pip install -e .
 ### Running tests
 
 ```bash
-python test/test_translit.py
+python tests/test_translit.py
 ```
 
 ### Publishing to PyPI
 
 This package uses GitHub Actions for automated publishing. To publish a new version:
 
-1. Update version in `src/__init__.py`
+1. Update version in `mn_translit/__init__.py`
 2. Create a new release on GitHub
 3. The GitHub Action will automatically run tests and publish to PyPI
 
