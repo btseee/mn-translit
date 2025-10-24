@@ -54,6 +54,17 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel build
           python -m build
 
+      - name: Verify package contents
+        run: |
+          echo "--- Listing files in workspace ---"
+          ls -lR
+          echo "--- Inspecting the generated wheel ---"
+          pip install wheel
+          unzip -l dist/*.whl
+          WHEEL_FILE=$(ls dist/*.whl)
+          echo "--- Contents of METADATA ---"
+          unzip -p $WHEEL_FILE *.dist-info/METADATA
+
       - name: Publish to PyPI 🚀
         uses: pypa/gh-action-pypi-publish@v1.9.0
         with:
