@@ -6,7 +6,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src import (
+from mn_translit import (
     latin_to_cyrillic, 
     cyrillic_to_latin, 
     number_to_words, 

@@ -26,7 +26,7 @@ pip install -e .
 ### Text Transliteration
 
 ```python
-from src import latin_to_cyrillic, cyrillic_to_latin
+from mn_translit import latin_to_cyrillic, cyrillic_to_latin
 
 # Latin to Cyrillic
 print(latin_to_cyrillic("Sain baina uu?"))
@@ -47,7 +47,7 @@ print(cyrillic_to_latin("Монгол"))
 ### Number Conversion
 
 ```python
-from src import number_to_words, words_to_number
+from mn_translit import number_to_words, words_to_number
 
 # Number to words (proper Mongolian grammar)
 print(number_to_words(21))

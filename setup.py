@@ -14,11 +14,16 @@ except IOError:
 
 # Get version from __init__.py
 version = {}
-with open(os.path.join(here, 'src', '__init__.py')) as f:
-    for line in f:
-        if line.startswith('__version__'):
-            exec(line, version)
-            break
+version_file = os.path.join(here, 'mn_translit', '__init__.py')
+if os.path.exists(version_file):
+    with open(version_file) as f:
+        for line in f:
+            if line.startswith('__version__'):
+                exec(line, version)
+                break
+else:
+    # Fallback version if file doesn't exist yet
+    version['__version__'] = '0.1.0'
 
 setup(
     name='mn-translit',
