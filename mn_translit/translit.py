@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from __future__ import unicode_literals
 
 
@@ -52,15 +53,26 @@ class MongolianTransliterator(object):
     }
     
     WORD_TO_NUMBER = {v: k for k, v in NUMBERS.items()}
+
+    def __init__(self):
+        # Cyr2latin
+        self.cyr_to_lat_map = self.CYRILLIC_TO_LATIN
+        cyr_keys = sorted(self.cyr_to_lat_map.keys(), key=len, reverse=True)
+        self.cyr_pattern = re.compile('|'.join(re.escape(key) for key in cyr_keys))
+
+        # Latin2Cyr
+        self.lat_to_cyr_map = dict(self.LATIN_TO_CYRILLIC_MULTI)
+        self.lat_to_cyr_map.update(self.LATIN_TO_CYRILLIC_SINGLE)
+        lat_keys = sorted(self.lat_to_cyr_map.keys(), key=len, reverse=True)
+        self.lat_pattern = re.compile('|'.join(re.escape(key) for key in lat_keys))
     
     def _convert_numbers_in_text(self, text, to_words=True):
-        import re
         if to_words:
             def replace_number(match):
                 num = int(match.group())
                 try:
                     return self.number_to_words(num)
-                except:
+                except (ValueError, KeyError):
                     return match.group()
             return re.sub(r'\d+', replace_number, text)
         else:
@@ -68,29 +80,36 @@ class MongolianTransliterator(object):
             result = []
             i = 0
             while i < len(words):
-                word_lower = words[i].lower()
-                if word_lower in self.WORD_TO_NUMBER or (i + 1 < len(words) and word_lower + ' ' + words[i + 1].lower() in ' '.join([w.lower() for w in words[i:i+3]])):
-                    try:
-                        num_words = []
-                        j = i
-                        while j < len(words) and words[j].lower() in self.WORD_TO_NUMBER:
-                            num_words.append(words[j])
-                            j += 1
-                        if num_words:
-                            num_text = ' '.join(num_words)
+                try:
+                    num_words = []
+                    j = i
+                    temp_num_text = ""
+                    while j < len(words):
+                        word_lower = words[j].lower()
+                        if word_lower in self.WORD_TO_NUMBER or word_lower in ['их', 'наяд']:
+                            temp_num_text = ' '.join(num_words + [word_lower])
                             try:
-                                num = self.words_to_number(num_text)
-                                result.append(str(num))
-                                i = j
-                                continue
-                            except:
-                                pass
-                    except:
-                        pass
+                                self.words_to_number(temp_num_text)
+                                num_words.append(words[j])
+                                j += 1
+                            except ValueError:
+                                break
+                        else:
+                            break
+                    
+                    if num_words:
+                        num_text = ' '.join(num_words)
+                        num = self.words_to_number(num_text)
+                        result.append(str(num))
+                        i = j
+                        continue
+                except (ValueError, KeyError):
+                    pass
+                
                 result.append(words[i])
                 i += 1
             return ' '.join(result)
-    
+
     def latin_to_cyrillic(self, text, trans_num=False):
         if not text:
             return text
@@ -98,30 +117,13 @@ class MongolianTransliterator(object):
         if trans_num:
             text = self._convert_numbers_in_text(text, to_words=True)
         
-        result, i = [], 0
-        while i < len(text):
-            matched = False
-            if i + 2 <= len(text):
-                substring = text[i:i+2]
-                for latin, cyrillic in self.LATIN_TO_CYRILLIC_MULTI:
-                    if substring == latin:
-                        result.append(cyrillic)
-                        i += 2
-                        matched = True
-                        break
-            
-            if not matched:
-                char = text[i]
-                result.append(self.LATIN_TO_CYRILLIC_SINGLE.get(char, char))
-                i += 1
-        
-        return ''.join(result)
-    
+        return self.lat_pattern.sub(lambda m: self.lat_to_cyr_map.get(m.group(0)), text)
+
     def cyrillic_to_latin(self, text, trans_num=False):
         if not text:
             return text
         
-        result = ''.join([self.CYRILLIC_TO_LATIN.get(char, char) for char in text])
+        result = self.cyr_pattern.sub(lambda m: self.cyr_to_lat_map.get(m.group(0)), text)
         
         if trans_num:
             result = self._convert_numbers_in_text(result, to_words=False)
@@ -156,7 +158,7 @@ class MongolianTransliterator(object):
         
         if num < 10000:
             thousands, remainder = num // 1000, num % 1000
-            result = self.NUMBERS[thousands] + ' ' + self.NUMBERS[1000]
+            result = self.number_to_words(thousands) + ' ' + self.NUMBERS[1000]
             return result if remainder == 0 else result + ' ' + self.number_to_words(remainder)
         
         if num < 100000:
@@ -191,22 +193,22 @@ class MongolianTransliterator(object):
     
     def words_to_number(self, text):
         words = text.strip().lower().split()
+        if not words:
+            raise ValueError("Cannot convert empty string to number")
+
         if len(words) == 1 and words[0] in self.WORD_TO_NUMBER:
             return self.WORD_TO_NUMBER[words[0]]
         
         total, current = 0, 0
-        i = 0
         
+        i = 0
         while i < len(words):
             word = words[i]
             
             if word == 'их' and i + 1 < len(words) and words[i + 1] == 'наяд':
-                num = self.WORD_TO_NUMBER.get('их наяд', 1000000000000)
-                total += (current if current > 0 else 1) * num
-                current = 0
-                i += 2
-                continue
-            
+                word = 'их наяд'
+                i += 1
+
             if word not in self.WORD_TO_NUMBER:
                 raise ValueError("Unknown word: {}".format(word))
             
@@ -216,10 +218,7 @@ class MongolianTransliterator(object):
                 total += (current if current > 0 else 1) * num
                 current = 0
             elif num == 100:
-                if current == 0:
-                    current = 100
-                else:
-                    current *= num
+                current = (current if current > 0 else 1) * num
             else:
                 current += num
             
