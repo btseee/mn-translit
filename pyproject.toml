@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mn-translit"
-version = "1.0.0"
+version = "1.0.1"
 description = "Mongolian Latin-Cyrillic transliteration library following MNS 5217:2012 standard"
 readme = "README.md"
 license = {text = "MIT"}
