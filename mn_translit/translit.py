@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import re
 from __future__ import unicode_literals
+import re
 
 
 class MongolianTransliterator(object):
