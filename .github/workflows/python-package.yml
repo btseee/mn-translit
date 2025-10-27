@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "main" ]
     tags:
-      - 'v*'   # Only publish on version tags (e.g., v0.1.0)
+      - 'v*' 
   pull_request:
     branches: [ "main" ]
 
@@ -36,13 +36,14 @@ jobs:
         run: pytest -v
 
   publish:
-    # Only run publish if tests succeed AND it's a version tag
     needs: test
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
-      contents: write  # Required for creating releases
-      id-token: write  # Required for trusted publishing to PyPI
+      contents: write 
+      id-token: write 
+    env:
+      ALLOW_PYPI_TOKEN: 'false'
     
     steps:
       - uses: actions/checkout@v4
@@ -91,8 +92,8 @@ jobs:
         continue-on-error: true
         id: trusted_publish
 
-      - name: Publish to PyPI with Token (Fallback) �
-        if: steps.trusted_publish.outcome == 'failure'
+      - name: Publish to PyPI with Token (Fallback) 
+        if: ${{ env.ALLOW_PYPI_TOKEN == 'true' && steps.trusted_publish.outcome == 'failure' }}
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
