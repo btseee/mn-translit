@@ -7,7 +7,7 @@ name = "mn-translit"
 version = "1.1.0"
 description = "Mongolian Latin-Cyrillic transliteration library following MNS 5217:2012 standard"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Battseren Badral", email = "bbattseren88@gmail.com"}
 ]
@@ -15,7 +15,6 @@ keywords = ["mongolian", "transliteration", "cyrillic", "latin", "mns-5217"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Text Processing :: Linguistic",
     "Programming Language :: Python :: 3",
