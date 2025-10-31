@@ -164,7 +164,11 @@ class MongolianTransliterator(object):
         
         if num < 100:
             tens, ones = (num // 10) * 10, num % 10
-            return self.NUMBERS[tens] if ones == 0 else self.NUMBERS[tens] + ' ' + self.NUMBERS[ones]
+            return (
+                self.NUMBERS[tens]
+                if ones == 0
+                else self.NUMBERS[tens] + ' ' + self.NUMBERS[ones]
+            )
         
         if num < 1000:
             hundreds, remainder = num // 100, num % 100

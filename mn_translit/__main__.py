@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Optional
 
-from . import __version__, cyrillic_to_latin, latin_to_cyrillic, transliterate
+from . import __version__, transliterate
 
 
 def main(argv: Optional[list[str]] = None) -> int:

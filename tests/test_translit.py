@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-from __future__ import unicode_literals
-import sys
+
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from mn_translit import (
-    latin_to_cyrillic, 
-    cyrillic_to_latin, 
-    number_to_words, 
+    cyrillic_to_latin,
+    latin_to_cyrillic,
+    number_to_words,
+    transliterate,
     words_to_number,
-    transliterate
 )
 
 

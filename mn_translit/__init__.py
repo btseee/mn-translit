@@ -5,7 +5,8 @@ version is sourced from the installed distribution metadata to avoid
 duplication with pyproject.toml.
 """
 
-from importlib.metadata import PackageNotFoundError, version as _pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 
 from .translit import (
     MongolianTransliterator,
