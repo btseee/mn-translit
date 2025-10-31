@@ -1,6 +1,0 @@
-name: (Disabled) Release workflow
-
-on:
-  workflow_dispatch:
-
-jobs: {}
