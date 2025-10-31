@@ -4,8 +4,7 @@ Mongolian Latin-Cyrillic transliteration following MNS 5217:2012 standard with p
 
 ## Python Version Support
 
-- Python 2.7
-- Python 3.4+
+- Python 3.8+
 
 ## Installation
 
@@ -16,7 +15,7 @@ pip install mn-translit
 Or install from source:
 
 ```bash
-git clone https://github.com/yourusername/mn-translit.git
+git clone https://github.com/btseee/mn-translit.git
 cd mn-translit
 pip install -e .
 ```
@@ -32,16 +31,28 @@ from mn_translit import latin_to_cyrillic, cyrillic_to_latin
 print(latin_to_cyrillic("Sain baina uu?"))
 # Output: Сайн байна уу?
 
-# With automatic number conversion
-print(latin_to_cyrillic("I have 21 books", trans_num=True))
-# Output: И хавэ хорин нэг боокс
-
-print(latin_to_cyrillic("Year 2024", trans_num=True))
-# Output: Еар хоёр мянга хорин дөрөв
+# With automatic number conversion (digits → words)
+print(latin_to_cyrillic("Bi 21 nom baina", trans_num=True))
+# Output: Би хорин нэг ном байна
 
 # Cyrillic to Latin
 print(cyrillic_to_latin("Монгол"))
 # Output: Mongol
+```
+
+### Command-line
+
+Install and use the CLI directly:
+
+```bash
+echo "Sain baina uu?" | mn-translit --direction cyrillic
+# → Сайн байна уу?
+
+echo "Монгол" | mn-translit --direction latin
+# → Mongol
+
+echo "Bi 2024 ond" | mn-translit --direction cyrillic --trans-num
+# → Би хоёр мянга хорин дөрвөн онд
 ```
 
 ### Number Conversion
@@ -136,18 +147,12 @@ Run the test suite to verify all functionality:
 python tests/test_translit.py
 ```
 
-Or with Python 2.7:
-
-```bash
-python2 tests/test_translit.py
-```
-
 ## Development
 
 ### Setting up for development
 
 ```bash
-git clone https://github.com/yourusername/mn-translit.git
+git clone https://github.com/btseee/mn-translit.git
 cd mn-translit
 pip install -e .
 ```

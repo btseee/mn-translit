@@ -1,11 +1,15 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import re
+from typing import Dict, List, Pattern, Tuple
 
 
 class MongolianTransliterator(object):
+    """Bidirectional transliteration between Mongolian Latin and Cyrillic.
+
+    Also supports converting Arabic numerals to Mongolian words and vice versa.
+    The mappings follow common conventions aligned with MNS 5217:2012.
+    """
     
-    LATIN_TO_CYRILLIC_MULTI = [
+    LATIN_TO_CYRILLIC_MULTI: List[Tuple[str, str]] = [
         ('kh', 'х'), ('ts', 'ц'), ('ch', 'ч'), ('sh', 'ш'),
         ('yo', 'ё'), ('yu', 'ю'), ('ya', 'я'), ('ye', 'е'), ('zh', 'ж'),
         ('ai', 'ай'), ('ei', 'эй'), ('ii', 'ий'), ('oi', 'ой'),
@@ -16,7 +20,7 @@ class MongolianTransliterator(object):
         ('Zh', 'Ж'), ('ZH', 'Ж'),
     ]
     
-    LATIN_TO_CYRILLIC_SINGLE = {
+    LATIN_TO_CYRILLIC_SINGLE: Dict[str, str] = {
         'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'e': 'э',
         'z': 'з', 'i': 'и', 'y': 'й', 'k': 'к', 'l': 'л', 'm': 'м',
         'n': 'н', 'o': 'о', 'p': 'п', 'r': 'р', 's': 'с', 't': 'т',
@@ -28,7 +32,7 @@ class MongolianTransliterator(object):
         'ö': 'ө', 'ü': 'ү', 'Ö': 'Ө', 'Ü': 'Ү',
     }
     
-    CYRILLIC_TO_LATIN = {
+    CYRILLIC_TO_LATIN: Dict[str, str] = {
         'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye',
         'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
         'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'ө': 'ö', 'п': 'p',
@@ -43,7 +47,7 @@ class MongolianTransliterator(object):
         'Ъ': '', 'Ы': 'Y', 'Ь': '', 'Э': 'E', 'Ю': 'Yu', 'Я': 'Ya',
     }
     
-    NUMBERS = {
+    NUMBERS: Dict[int, str] = {
         0: 'тэг', 1: 'нэг', 2: 'хоёр', 3: 'гурав', 4: 'дөрөв', 5: 'тав',
         6: 'зургаа', 7: 'долоо', 8: 'найм', 9: 'ес', 10: 'арав',
         20: 'хорин', 30: 'гучин', 40: 'дөчин', 50: 'тавин', 60: 'жаран',
@@ -52,21 +56,26 @@ class MongolianTransliterator(object):
         1000000000000: 'их наяд'
     }
     
-    WORD_TO_NUMBER = {v: k for k, v in NUMBERS.items()}
+    WORD_TO_NUMBER: Dict[str, int] = {v: k for k, v in NUMBERS.items()}
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Cyr2latin
-        self.cyr_to_lat_map = self.CYRILLIC_TO_LATIN
+        self.cyr_to_lat_map: Dict[str, str] = self.CYRILLIC_TO_LATIN
         cyr_keys = sorted(self.cyr_to_lat_map.keys(), key=len, reverse=True)
-        self.cyr_pattern = re.compile('|'.join(re.escape(key) for key in cyr_keys))
+        self.cyr_pattern: Pattern[str] = re.compile('|'.join(re.escape(key) for key in cyr_keys))
 
         # Latin2Cyr
-        self.lat_to_cyr_map = dict(self.LATIN_TO_CYRILLIC_MULTI)
+        self.lat_to_cyr_map: Dict[str, str] = dict(self.LATIN_TO_CYRILLIC_MULTI)
         self.lat_to_cyr_map.update(self.LATIN_TO_CYRILLIC_SINGLE)
         lat_keys = sorted(self.lat_to_cyr_map.keys(), key=len, reverse=True)
-        self.lat_pattern = re.compile('|'.join(re.escape(key) for key in lat_keys))
+        self.lat_pattern: Pattern[str] = re.compile('|'.join(re.escape(key) for key in lat_keys))
     
-    def _convert_numbers_in_text(self, text, to_words=True):
+    def _convert_numbers_in_text(self, text: str, to_words: bool = True) -> str:
+        """Convert numbers embedded in text.
+
+        When to_words=True, converts Arabic numerals (\\d+) to Mongolian words.
+        When to_words=False, attempts to parse Mongolian number words into digits.
+        """
         if to_words:
             def replace_number(match):
                 num = int(match.group())
@@ -110,7 +119,12 @@ class MongolianTransliterator(object):
                 i += 1
             return ' '.join(result)
 
-    def latin_to_cyrillic(self, text, trans_num=False):
+    def latin_to_cyrillic(self, text: str, trans_num: bool = False) -> str:
+        """Transliterate Latin input to Mongolian Cyrillic.
+
+        If trans_num=True, Arabic numerals within the text are rendered as
+        Mongolian number words.
+        """
         if not text:
             return text
         
@@ -119,7 +133,11 @@ class MongolianTransliterator(object):
         
         return self.lat_pattern.sub(lambda m: self.lat_to_cyr_map.get(m.group(0)), text)
 
-    def cyrillic_to_latin(self, text, trans_num=False):
+    def cyrillic_to_latin(self, text: str, trans_num: bool = False) -> str:
+        """Transliterate Mongolian Cyrillic input to Latin.
+
+        If trans_num=True, Mongolian number words are converted to digits.
+        """
         if not text:
             return text
         
@@ -130,9 +148,13 @@ class MongolianTransliterator(object):
         
         return result
     
-    def number_to_words(self, num):
+    def number_to_words(self, num: int) -> str:
+        """Convert a non-negative integer to Mongolian words.
+
+        Raises ValueError for negative values or non-integers.
+        """
         if not isinstance(num, int) or num < 0:
-            raise ValueError("Number must be a positive integer")
+            raise ValueError("Number must be a non-negative integer")
         
         if num in self.NUMBERS:
             return self.NUMBERS[num]
@@ -191,7 +213,11 @@ class MongolianTransliterator(object):
         result = self.number_to_words(trillions) + ' ' + self.NUMBERS[1000000000000]
         return result if remainder == 0 else result + ' ' + self.number_to_words(remainder)
     
-    def words_to_number(self, text):
+    def words_to_number(self, text: str) -> int:
+        """Parse Mongolian number words into a non-negative integer.
+
+        Supports large scales up to "их наяд" (10^12).
+        """
         words = text.strip().lower().split()
         if not words:
             raise ValueError("Cannot convert empty string to number")
@@ -226,7 +252,13 @@ class MongolianTransliterator(object):
         
         return total + current
     
-    def transliterate(self, text, to_script='cyrillic', trans_num=False):
+    def transliterate(self, text: str, to_script: str = 'cyrillic', trans_num: bool = False) -> str:
+        """Convenience wrapper for bidirectional transliteration.
+
+        to_script: 'cyrillic'|'latin' (also accepts short aliases 'c'/'l').
+        trans_num: when True, performs number conversions as described in
+        the direction-specific methods.
+        """
         if to_script.lower() in ['cyrillic', 'cyr', 'c']:
             return self.latin_to_cyrillic(text, trans_num=trans_num)
         elif to_script.lower() in ['latin', 'lat', 'l']:
@@ -236,17 +268,17 @@ class MongolianTransliterator(object):
 
 _transliterator = MongolianTransliterator()
 
-def latin_to_cyrillic(text, trans_num=False):
+def latin_to_cyrillic(text: str, trans_num: bool = False) -> str:
     return _transliterator.latin_to_cyrillic(text, trans_num=trans_num)
 
-def cyrillic_to_latin(text, trans_num=False):
+def cyrillic_to_latin(text: str, trans_num: bool = False) -> str:
     return _transliterator.cyrillic_to_latin(text, trans_num=trans_num)
 
-def number_to_words(num):
+def number_to_words(num: int) -> str:
     return _transliterator.number_to_words(num)
 
-def words_to_number(text):
+def words_to_number(text: str) -> int:
     return _transliterator.words_to_number(text)
 
-def transliterate(text, to_script='cyrillic', trans_num=False):
+def transliterate(text: str, to_script: str = 'cyrillic', trans_num: bool = False) -> str:
     return _transliterator.transliterate(text, to_script=to_script, trans_num=trans_num)

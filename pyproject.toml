@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mn-translit"
-version = "1.0.2"
+version = "1.1.0"
 description = "Mongolian Latin-Cyrillic transliteration library following MNS 5217:2012 standard"
 readme = "README.md"
 license = {text = "MIT"}
@@ -15,26 +15,43 @@ keywords = ["mongolian", "transliteration", "cyrillic", "latin", "mns-5217"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Topic :: Text Processing :: Linguistic",
-    "Programming Language :: Python :: 2",
-    "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+requires-python = ">=3.8"
 
 [tool.setuptools]
 packages = ["mn_translit"]
+
+[tool.setuptools.package-data]
+mn_translit = ["py.typed"]
+
+[project.scripts]
+mn-translit = "mn_translit.__main__:main"
 
 [project.urls]
 Homepage = "https://github.com/btseee/mn-translit"
 "Bug Reports" = "https://github.com/btseee/mn-translit/issues"
 "Source" = "https://github.com/btseee/mn-translit"
+
+[tool.black]
+line-length = 100
+target-version = ["py38"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+]
+ignore = []

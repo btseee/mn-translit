@@ -1,24 +1,32 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+"""mn_translit package public API.
 
-__version__ = '1.0.0'
-__author__ = 'Your Name'
-__license__ = 'MIT'
+Exposes transliteration helpers and the main class. Package metadata such as
+version is sourced from the installed distribution metadata to avoid
+duplication with pyproject.toml.
+"""
+
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .translit import (
-    latin_to_cyrillic,
+    MongolianTransliterator,
     cyrillic_to_latin,
-    transliterate,
+    latin_to_cyrillic,
     number_to_words,
+    transliterate,
     words_to_number,
-    MongolianTransliterator
 )
 
+try:  
+    __version__ = _pkg_version("mn-translit")
+except PackageNotFoundError:  
+    __version__ = "0.0.0"
+
 __all__ = [
-    'latin_to_cyrillic',
-    'cyrillic_to_latin',
-    'transliterate',
-    'number_to_words',
-    'words_to_number',
-    'MongolianTransliterator'
+    "latin_to_cyrillic",
+    "cyrillic_to_latin",
+    "transliterate",
+    "number_to_words",
+    "words_to_number",
+    "MongolianTransliterator",
+    "__version__",
 ]
